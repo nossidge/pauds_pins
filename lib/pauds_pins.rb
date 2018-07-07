@@ -13,9 +13,10 @@ require 'nokogiri'
 require 'imgur'
 
 require_relative 'pauds_pins/pin'
+require_relative 'pauds_pins/pin_collection'
 require_relative 'pauds_pins/version'
 
-IMGUR_CLIENT_ID = 'f00f00f00f00f00'
+IMGUR_CLIENT_ID = ENV['IMGUR_CLIENT_ID']
 
 DIR_ROOT           = Pathname(__FILE__).parent.parent
 DIR_DATA           = DIR_ROOT + 'data'
