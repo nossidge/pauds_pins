@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Paud's Pins</title>
+  <style>
+    body {
+      background-color: pink;
+      background-size: 100% 100%;
+      overflow: hidden;
+    }
+  </style>
+  <script>
+
+    // Random number between two values.
+    function rand(_max, _min, _int) {
+      let max = (_max === 0 || _max) ? _max : 1,
+          min = _min || 0,
+          gen = min + (max - min) * Math.random();
+      return (_int) ? Math.round(gen) : gen;
+    };
+
+    // Global vars for DOM elements.
+    let imagesDiv;
+
+    // Disable default space scroll down behaviour.
+    window.onkeydown = function(e) {
+      return !(e.keyCode == 32);
+    };
+
+    // Add verse on spacebar press, redraw images on R press.
+    window.addEventListener("keydown", addVerse_on_space, false);
+    function addVerse_on_space(e) {
+      if (e.keyCode == 32) {
+        respawnRandom();
+      } else if (e.keyCode == 82) {
+        resetImages();
+      }
+    }
+
+    // http://imgur.com/a/7lZobWg
+    let imgsBackgroundArray = ["f8NuXl3", "M4rQpWK", "oSFBiMW"];
+    let imgsArray = ["ArS7Qsj", "Am26Qcz", "HYxME09", "bqACHXt", "ghw8zoh", "AlsmXco", "U3SxLda", "gjTptYH", "kkfmAHD", "6tp7Nju", "hHhB0qt", "ADo4mL6", "HJCRGfz", "nFVOxTT", "QlInpM8", "mMejSQJ", "HYwpBzf", "ifGFnXz", "udcMbGT", "FS7VoP9", "qor5ghO", "mWOFQRF", "54eEb6v", "jOQK2JD", "Zggl7Kz", "VOGZBRz", "MyFPZqh", "befyylV", "Uar3yOt", "5S8KaEL", "4U38grz", "oc1Rtj1", "3RC7c1X", "SpmN4Xb", "7fmaqqY", "5aPpJMU", "vcCjEs7", "YIsmKsf", "l5EYh8P", "ua44jfz", "1ZuqRQX", "ID058Xf", "FVVcCKx", "xnQ6wCS", "3DHeLGY", "Pt4ix05", "GSAeOTQ", "6EUPQ65", "mmNRvGo", "dpZ5Sbv", "qVLcgvT", "jtbSYVr", "zO08pCs", "GXz9zab", "nBEPWqc", "YzbA1EU", "f1DKbWO", "7IafoKi", "NODw5Su", "29HV3IS", "Aw9RFZc", "HT70Lms", "v7JeY2D", "exNxi7k", "RlfzhAb", "lcwuA7P", "5ju9H56", "HyFUV03", "VvXI3w5", "0QfLAeR", "kYXsi0w", "2HsQx9P", "73UWqVF", "EMLpna6", "HDw6nAd", "CRcZKxM", "AN3s5BG", "h4MKrzZ", "0otRvfV", "5Oz7d2J", "7FFcKIX", "HbW6bqJ", "0FSBf6o", "xueOLve", "15gCX8i", "KUTmKmv", "2AvmVQs", "wFV72uC", "puYJNsP", "F8nrcDt", "AGHLM6K", "lIekk91", "IlUuNoF", "wnO7gDn", "ra0QbZ6", "ujmMrQ7", "9pzYDPw", "5wSme0e", "RTBR82r", "xL3mTdD", "fbIPxFL", "FxjfUB0", "HCewFl0", "Z4EIpId", "5fqfGZ0", "9uf5wMp", "QyHg36r", "bfLqGZs", "nf3kqzm", "oTnSfjc", "gde7Yti", "uvrgwP5", "TO7jQy2", "lmIH9Y8", "VRlv9h4", "rrbji5J", "bm0xyS3", "gOJFlc7", "siKJQYw", "ZF1bnDh", "gBW5CtN", "QAtqAOT", "zOSiQTN", "50c52BM", "Nhg6kHf", "3C5TsUz", "YYnYfcP", "ub3Sh1i", "j0sZPW2", "Q9VHKSk", "F2T3Llv", "mIKYwfg", "o5sdAC8", "10ztg1f", "76pxA2V", "4OdJUDc", "oyKOpV2", "6gD3qnd", "bOT9akL", "tppPQ3G", "xui61j9", "bNRlHQk", "bStkik3", "99vQuda", "dCDvj5A", "5yF846U", "rbBC1jr", "3Gcw8hz", "En8zenC", "FQ9hMT8", "RIzFodT", "lc3MYqk", "OJmJliA", "dAS9DJz", "TNPKQ2u", "kaWpp0U", "iC113Rq", "twmU4dF", "WXukv34", "XPYdh5D", "NCG7FjM", "737rx79", "S13tzkK", "ayPoAtg", "mO2toak", "aLmtNMY", "pDi318G", "7WjTcuS", "O0UzvU4", "Mdmwjaa", "cQxticy", "qLwYhsa", "FhJucsb", "Pn3ONY5", "qZAARoM", "7nbUBrn", "PIRd3v0", "vfDSwe8", "9kemqcO", "f7WYn79", "yBXJb4h", "oe4Iqnk", "jW8gY7Z", "ZlPeYl6", "SzXWtIT", "wpOsI0S", "IO0Dpzy", "bQK609z", "jeZXosm", "0VuLhI6", "yFU2G0j", "kYKvxty", "lmAPek2", "qGBM7oH", "UHg0Bjf", "oN84LNZ", "JCQsxSP", "9XiSUoC", "vhfVweB", "WZJmewX", "92H6plH", "wWqe7uI", "QDDWrOn", "KaVmQkc", "MMfjCid"];
+
+    function setBackground() {
+      let img = imgsBackgroundArray[rand(0, imgsBackgroundArray.length - 1, 1)];
+          img = "https://i.imgur.com/" + img + ".png";
+      document.body.style = "background-image: url('" + img + "'); background-size: cover;";
+    }
+
+    // Add a new image somewhere on the page.
+    function addImage() {
+      let img = imgsArray[rand(0, imgsArray.length - 1, 1)];
+          img = "https://i.imgur.com/" + img + ".png";
+      let left = rand(-15, 95, 1);
+      let top = rand(-10, 90, 1);
+      let rotate = rand(-40, 40, 1);
+      imagesDiv.innerHTML += "<img src='" + img + "' style='position:absolute;top:" + top + "%;left:" + left + "%;transform:rotate(" + rotate + "deg); max-height:300px;width:auto;' onclick='respawn(this)'>";
+    }
+
+    // Delete an element from the DOM.
+    function killImage(self) {
+      self.outerHTML = "";
+    }
+
+    // Kill the image and draw a new one.
+    function respawn(self) {
+      killImage(self);
+      addImage()
+    }
+
+    // Kill any image and draw a new one.
+    function respawnRandom() {
+      let imgs = document.getElementsByTagName("img");
+      let img = imgs[rand(0, imgs.length - 1, 1)];
+      respawn(img);
+    }
+
+    // Clear existing images and redraw.
+    function resetImages() {
+      let count = 60;
+      imagesDiv.innerHTML = "";
+      for(let i=0; i<count; i++) {
+        addImage();
+      }
+    }
+
+    // Run when loaded.
+    function pageInit() {
+      imagesDiv = document.getElementById('images');
+      setBackground();
+      resetImages();
+    }
+  </script>
+</head>
+<body onload='pageInit()'>
+  <div id='images'></div>
+</body>
+</html>
