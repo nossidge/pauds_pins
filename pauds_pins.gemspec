@@ -25,8 +25,6 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.require_paths = ['lib']
 
-  s.required_ruby_version = '>= 2.3'
-
   s.add_runtime_dependency('imgur',    '~> 0.0', '>= 0.0.4')
   s.add_runtime_dependency('nokogiri', '~> 1.8', '>= 1.8.0')
 end

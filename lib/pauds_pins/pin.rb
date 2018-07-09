@@ -3,57 +3,43 @@
 
 module PaudsPins
   class Pin
-    attr_reader(
-      :title,
-      :filename,
-      :page_url,
-      :jpg_url,
-      :png_url_orig,
-      :png_url_compressed
-    )
+    attr_accessor :title, :page, :jpg, :png_orig, :png_x320
 
-    def initialize(
-      title:,
-      filename:,
-      page_url:,
-      jpg_url:,
-      png_url_orig:,
-      png_url_compressed:
-    )
-      @title              = title
-      @filename           = filename
-      @page_url           = page_url
-      @jpg_url            = jpg_url
-      @png_url_orig       = png_url_orig
-      @png_url_compressed = png_url_compressed
+    def initialize(args = {})
+      @title     = args[:title]
+      @page      = args[:page]
+      @jpg       = args[:jpg]
+      @png_orig  = args[:png_orig]
+      @png_x320  = args[:png_x320]
     end
 
     def filename
-      return @filename unless @filename.empty?
-      uri = URI(jpg_url)
-      @filename = File.basename(uri.path, '.jpg')
+      File.basename(jpg, '.jpg')
     end
 
     def jpg_filepath
       DIR_JPG + (filename.to_s + '.jpg')
     end
 
-    def png_orig
+    def png_orig_filepath
       DIR_PNG_ORIG + (filename.to_s + '.png')
     end
 
-    def png_compressed
-      DIR_PNG_COMPRESSED + (filename.to_s + '.png')
+    def png_x320_filepath
+      DIR_PNG_X320 + (filename.to_s + '.png')
     end
 
+    ############################################################################
+
+    # This is the hash that is written to the JSON file
     def to_h
       {
-        title:              title.to_s,
-        filename:           filename.to_s,
-        page_url:           page_url.to_s,
-        jpg_url:            jpg_url.to_s,
-        png_url_orig:       png_url_orig.to_s,
-        png_url_compressed: png_url_compressed.to_s
+        title:     title.to_s,
+        filename:  filename.to_s,
+        page:      page.to_s,
+        jpg:       jpg.to_s,
+        png_orig:  png_orig.to_s,
+        png_x320:  png_x320.to_s
       }
     end
 
@@ -61,51 +47,69 @@ module PaudsPins
       to_h.to_s
     end
 
-    # Sort to keep the categories together
+    # Using 'page' will sort by category, then filename
     def <=>(other)
-      other.page_url <=> page_url
+      other.page <=> page
     end
 
-    def download_jpg
-      uri = URI(jpg_url)
-      @filename = File.basename(uri.path).sub(/.jpg$/, '')
+    ############################################################################
 
+    # Download the JPEG from the '@jpg' URL
+    def download_jpg
       return jpg_filepath if jpg_filepath.exist?
 
       File.open(jpg_filepath, 'wb') do |f|
-        f << uri.read
+        f << URI(jpg).read
       end
       jpg_filepath
     end
 
+    ############################################################################
+
     # Convert to PNG with transparent background
     def jpg_to_png
-      return png_orig if png_orig.exist?
-      `magick convert #{jpg_filepath} -fuzz 3% -transparent white #{png_orig}`
-      png_orig
+      return png_orig_filepath if png_orig_filepath.exist?
+
+      command   = 'magick convert'
+      operation = '-fuzz 3% -transparent white'
+      input     = "\"#{jpg_filepath}\""
+      output    = "\"#{png_orig_filepath}\""
+      `#{command} #{operation} #{input} #{output}`
+
+      png_orig_filepath
     end
 
     # Resize and compress the image
-    def compress_png
-      return png_compressed if png_compressed.exist?
+    def png_to_png_x320
+      return png_x320_filepath if png_x320_filepath.exist?
+
       size      = 320
       command   = 'magick convert'
       operation = "-resize #{size}x#{size} -strip -quality 50%"
-      input     = "\"#{png_orig}\""
-      output    = "\"#{png_compressed}\""
+      input     = "\"#{png_orig_filepath}\""
+      output    = "\"#{png_x320_filepath}\""
       `#{command} #{operation} #{input} #{output}`
-      png_compressed
+
+      png_x320_filepath
     end
 
-    def upload_png_compressed(limit_with_sleep: false)
-      return @png_url_compressed unless @png_url_compressed.empty?
-      @png_url_compressed = upload_png(png_compressed, limit_with_sleep: false)
+    ############################################################################
+
+    def upload_png_x320(limit_with_sleep: false)
+      return @png_x320 unless @png_x320.empty?
+      @png_x320 = upload_png(
+        png_x320_filepath, limit_with_sleep: limit_with_sleep
+      )
     end
 
     def upload_png_orig(limit_with_sleep: false)
-      return @png_url_orig unless @png_url_orig.empty?
-      @png_url_orig = upload_png(png_orig, limit_with_sleep: false)
+      return @png_orig unless @png_orig.empty?
+      @png_orig = upload_png(
+        png_orig_filepath, limit_with_sleep: limit_with_sleep
+      )
     end
+
+    ############################################################################
 
     private
 

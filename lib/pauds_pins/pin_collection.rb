@@ -9,11 +9,31 @@ module PaudsPins
 
     def initialize
       @pins = []
-      load if FILE_JSON.exist?
+      scrape_if_necessary
     end
 
     def each
-      yield pins
+      pins.each do |pin|
+        yield pin
+      end
+    end
+
+    ############################################################################
+
+    # Scrape the wordpress site to get metadata for all the pins
+    # Don't scrape if the JSON file already exists
+    def scrape_if_necessary
+      return load if FILE_JSON.exist?
+      @pins = get_image_pins
+    end
+
+    # Load pin collection data from JSON file
+    def load
+      from_file = JSON.parse(
+        FILE_JSON.read(encoding: 'UTF-8'),
+        symbolize_names: true
+      )
+      @pins = from_file.map { |i| Pin.new(i) }
     end
 
     # Save the contents of @pins as a json file
@@ -25,22 +45,9 @@ module PaudsPins
       end
     end
 
-    # Scrape the wordpress site to get metadata for all the pins
-    def scrape
-      return load if FILE_JSON.exist?
-      @pins = get_image_pins
-    end
+    ############################################################################
 
-    # Load from file to prevent unnecessary gets
-    def load
-      from_file = JSON.parse(
-        FILE_JSON.read(encoding: 'UTF-8'),
-        symbolize_names: true
-      )
-      @pins = from_file.map { |i| Pin.new(i) }
-    end
-
-    # Downloading all JPGs en-masse using multithreading
+    # Download all JPGs en-masse using multithreading
     def each_download_jpg
       pins.map do |pin|
         Thread.new(pin) do |pin|
@@ -49,6 +56,8 @@ module PaudsPins
       end.each(&:join)
     end
 
+    # Convert each JPG to a PNG
+    # I'm using multithreading, but maybe it's not necessary...
     def each_jpg_to_png
       pins.map do |pin|
         Thread.new(pin) do |pin|
@@ -57,21 +66,26 @@ module PaudsPins
       end.each(&:join)
     end
 
-    def each_compress_png
+    # Compress each PNG to a smaller file
+    def each_compress_as_png_x320
       pins.map do |pin|
         Thread.new(pin) do |pin|
-          pin.compress_png
+          pin.png_to_png_x320
         end
       end.each(&:join)
     end
 
-    def upload_till_error_png_compressed
-      upload_till_error(:next_upload_png_compressed)
+    ############################################################################
+
+    def upload_till_error_png_x320
+      upload_till_error(:next_upload_png_x320)
     end
 
     def upload_till_error_png_orig
       upload_till_error(:next_upload_png_orig)
     end
+
+    ############################################################################
 
     private
 
@@ -85,13 +99,13 @@ module PaudsPins
 
     # Find the first pin that does not have a url
     # Upload it
-    def next_upload_png_compressed
-      pin = pins.find { |i| i.png_url_compressed.empty? }
-      pin.upload_png_compressed
+    def next_upload_png_x320
+      pin = pins.find { |i| i.png_x320.empty? }
+      pin.upload_png_x320
     end
 
     def next_upload_png_orig
-      pin = pins.find { |i| i.png_url_orig.empty? }
+      pin = pins.find { |i| i.png_orig.empty? }
       pin.upload_png_orig
     end
 
@@ -130,8 +144,8 @@ module PaudsPins
       titles.count.times.map do |i|
         Pin.new(
           title: titles[i],
-          page_url: page_urls[i],
-          jpg_url: jpg_urls[i]
+          page: page_urls[i],
+          jpg: jpg_urls[i]
         )
       end
     end
