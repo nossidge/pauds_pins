@@ -1,130 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Paud's Pins</title>
-  <style>
-    body {
-      background-color: pink;
-      background-size: 100% 100%;
-      overflow: hidden;
-    }
-  </style>
-  <script>
-
-    // Global vars.
-    let imagesDiv, pinsJSON;
-
-    // Random number between two values.
-    function rand(_max, _min, _int) {
-      let max = (_max === 0 || _max) ? _max : 1,
-          min = _min || 0,
-          gen = min + (max - min) * Math.random();
-      return (_int) ? Math.round(gen) : gen;
-    }
-
-    function arrayRand(array) {
-      return array[rand(0, array.length - 1, true)];
-    }
-
-    // Disable default space scroll down behaviour.
-    window.onkeydown = function(e) {
-      return !(e.keyCode == 32);
-    };
-
-    // Add verse on spacebar press, redraw images on R press.
-    window.addEventListener("keydown", addVerse_on_space, false);
-    function addVerse_on_space(e) {
-      if (e.keyCode == 32) {
-        respawnRandom();
-      } else if (e.keyCode == 82) {
-        resetImages();
-      }
-    }
-
-    // All backgrounds are in this album: imgur.com/a/7lZobWg
-    function setBackground() {
-      let imgsBackgroundArray = ["f8NuXl3", "M4rQpWK", "oSFBiMW"];
-      let img = arrayRand(imgsBackgroundArray);
-          img = "https://i.imgur.com/" + img + ".png";
-      let bgImage = "background-image: url('" + img + "');";
-      let bgSize  = "background-size: cover;";
-      document.body.style = bgImage + bgSize;
-    }
-
-    // Add a new image somewhere on the page.
-    function addImage() {
-      let img = arrayRand(pinsJSON);
-      let topY   = rand(-10, 90, true);
-      let leftX  = rand(-15, 95, true);
-      let rotate = rand(-40, 40, true);
-
-      let position = "position:absolute;";
-      let width = "width:auto;";
-      let top = "top:" + topY + "%;";
-      let left = "left:" + leftX + "%;";
-      let transform = "transform:rotate(" + rotate + "deg);";
-      let maxHeight = "max-height:320px;";
-      let style = " style='" +
-        position + width + top + left + transform + maxHeight
-      + "'";
-
-      let title   = " title='" + img["title"] + "'";
-      let src     = " src='" + img["png_x320"] + "'";
-      let onclick = " onclick='respawn(this)'";
-
-      let wholeThing = "<img" + title + src + onclick + style + ">";
-      imagesDiv.innerHTML += wholeThing;
-    }
-
-    // Delete an element from the DOM.
-    function killImage(self) {
-      self.outerHTML = "";
-    }
-
-    // Kill the image and draw a new one.
-    function respawn(self) {
-      killImage(self);
-      addImage();
-    }
-
-    // Kill any image and draw a new one.
-    function respawnRandom() {
-      let imgs = document.getElementsByTagName("img");
-      let img = arrayRand(imgs);
-      respawn(img);
-    }
-
-    // Clear existing images and redraw.
-    function resetImages() {
-      let count = 60;
-      imagesDiv.innerHTML = "";
-      for(let i = 0; i < count; i++) {
-        addImage();
-      }
-    }
-
-    // Wait for the JSON to be loaded.
-    document.addEventListener("DOMContentLoaded", function(e) {
-      let x = new XMLHttpRequest();
-      x.open("GET", "pins.json", true);
-      x.responseType = "json";
-      x.onload = function() {
-        pinsJSON = x.response;
-        initPage();
-      }
-      x.send(null);
-    });
-
-    // Initialise the images.
-    function initPage() {
-      imagesDiv = document.getElementById("images");
-      setBackground();
-      resetImages();
-    }
-  </script>
-</head>
-<body>
-  <div id="images"></div>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>Paud's Pins</title>
+    <link rel="stylesheet" type="text/css" href="pins.css">
+    <script type="text/javascript" src="pins.js"></script>
+  </head>
+  <body>
+    <div id="images"></div>
+    <div id="popup">
+      <div id="nw">
+        <p></p>
+      </div>
+      <div id="ne" onclick="detailToggle()">
+        <p id="arrow">&#x25B2;</p>
+      </div>
+      <div id="s">
+        <div id="sw">
+          <p>Collage based on pin badges collected by Paud Hegarty and photographed by Gavin McGregor.</p>
+          <p>See <a href="https://paudspins.wordpress.com/">paudspins.wordpress.com</a> for details of the project.</p>
+          <p>Code for this site can be found on <a href="https://github.com/nossidge/pauds_pins">GitHub</a>.</p>
+        </div>
+        <div id="se">
+          <p>On clicking a pin:</p>
+          <form>
+            <input type="radio" name="click" value="random" checked>
+              <label for="random" onclick="selectRadio(this)">Randomise pin</label>
+            <br>
+            <input type="radio" name="click" value="link">
+              <label for="link" onclick="selectRadio(this)">Link to webpage</label>
+            <br>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

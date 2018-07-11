@@ -1,0 +1,81 @@
+
+body {
+  background-color: pink;
+  background-size: 100% 100%;
+  overflow: hidden;
+}
+a:link    { color: pink; }
+a:visited { color: pink; }
+a:hover   { color: pink; }
+a:active  { color: pink; }
+
+/******************************************************************************/
+
+#popup {
+  position: absolute;
+  bottom: -110px;
+  right: 0;
+  width: 100%;
+  padding: 0px ;
+  font-size: 20px;
+  color: pink;
+}
+#ne, #s, #sw, #se {
+  background-color: #111;
+}
+#nw {
+  float: left;
+}
+#ne {
+  float: right;
+  width: 108px;
+  text-align: center;
+}
+#ne p {
+  font-size: 70px;
+  margin: 10px;
+}
+#s {
+  height: 90px;
+  padding: 8px;
+  clear: both;
+}
+#sw {
+  float: left;
+}
+#se {
+  float: right;
+  width: 180px;
+}
+#s p {
+  padding: 0px;
+  margin: 4px;
+}
+
+/******************************************************************************/
+
+#popup.visible {
+  -webkit-animation: popup_fadein 0.5s;
+  animation: popup_fadein 0.5s;
+}
+@-webkit-keyframes popup_fadein {
+  from { bottom: -110px; }
+  to   { bottom: 0px; }
+}
+@keyframes popup_fadein {
+  from { bottom: -110px; }
+  to   { bottom: 0px; }
+}
+
+#popup.hidden {
+  -webkit-animation: popup_fadeout 0.5s;
+  animation: popup_fadeout 0.5s;
+}
+@-webkit-keyframes popup_fadeout {
+  from { bottom: 0px; }
+  to   { bottom: -110px; }
+}
+@keyframes popup_fadeout {
+  from { bottom: 0px; }
+  to   { bottom: -110px; }
+}
