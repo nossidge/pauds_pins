@@ -1,4 +1,3 @@
-
 // Random number between two values.
 function rand(_max, _min, _int) {
   let max = (_max === 0 || _max) ? _max : 1,
@@ -54,11 +53,27 @@ function radioValue() {
 }
 
 // Select the correct radio button when its label is clicked.
-function selectRadio(self) {
-  let value = self.getAttribute("for");
+function selectRadio(value) {
   let query = "input[value='" + value + "']";
   let radio = document.querySelector(query);
   radio.checked = true;
+  toggleAnchorHrefs(value == 'link');
+}
+
+// Toggle the hrefs on or off.
+function toggleAnchorHrefs(on) {
+  let pins = document.getElementsByClassName("pin");
+  for(let i = 0; i < pins.length; i++) {
+    let pin = pins[i];
+    let anchor = pin.getElementsByTagName("a")[0];
+    let img = anchor.getElementsByTagName("img")[0];
+    if (on) {
+      let page = img.getAttribute("page");
+      anchor.setAttribute("href", page);
+    } else {
+      anchor.removeAttribute("href");
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,37 +84,63 @@ let imagesDiv, pinsJSON;
 // All backgrounds are in this album: imgur.com/a/7lZobWg
 function setBackground() {
   let imgsBackgroundArray = ["f8NuXl3", "M4rQpWK", "oSFBiMW"];
-  let img = arrayRand(imgsBackgroundArray);
-      img = "https://i.imgur.com/" + img + ".png";
-  let bgImage = "background-image: url('" + img + "');";
+  let bg = arrayRand(imgsBackgroundArray);
+      bg = "https://i.imgur.com/" + bg + ".png";
+  let bgImage = "background-image: url('" + bg + "');";
   let bgSize  = "background-size: cover;";
   document.body.style = bgImage + bgSize;
 }
 
 // Add a new image somewhere on the page.
-function addImage() {
-  let img = arrayRand(pinsJSON);
+function addImage(id) {
+
+  // Set CSS style and position.
   let topY   = rand(-10, 90, true);
   let leftX  = rand(-15, 95, true);
   let rotate = rand(-40, 40, true);
-
   let position = "position:absolute;";
   let width = "width:auto;";
   let top = "top:" + topY + "%;";
   let left = "left:" + leftX + "%;";
   let transform = "transform:rotate(" + rotate + "deg);";
   let maxHeight = "max-height:320px;";
-  let style = " style='" +
-    position + width + top + left + transform + maxHeight
-  + "'";
+  let style = position + width + top + left + transform + maxHeight;
 
-  let title   = " title='" + img["title"] + "'";
-  let page     = " page='" + img["page"] + "'";
-  let src     = " src='" + img["png_x320"] + "'";
-  let onclick = " onclick='pinOnclick(this)'";
+  // Re-use the existing element, or create new if null.
+  let div = document.getElementById(id);
+  if (div == null) div = document.createElement("div");
+  let img = getOrCreate(div, "img");
+  let anchor = getOrCreate(img, "a");
 
-  let wholeThing = "<img" + title + page + src + onclick + style + ">";
-  imagesDiv.innerHTML += wholeThing;
+  div.setAttribute("id", id);
+  div.setAttribute("class", "pin");
+  div.setAttribute("style", style);
+  div.setAttribute("onclick", "pinOnclick(this)");
+
+  let imgObj = arrayRand(pinsJSON);
+  img.setAttribute("title", imgObj["title"]);
+  img.setAttribute("page", imgObj["page"]);
+  img.setAttribute("src", imgObj["png_x320"]);
+
+  anchor.setAttribute("target", "_blank");
+  anchor.setAttribute("rel", "noopener noreferrer");
+  if (radioValue() == "link") anchor.setAttribute("href", imgObj["page"]);
+
+  div.appendChild(anchor);
+  anchor.appendChild(img);
+
+  document.getElementById("images").appendChild(div);
+}
+
+// Re-use the existing element, or create new if null.
+function getOrCreate(parent, tagName) {
+  let element = parent.getElementsByTagName(tagName);
+  if (element.length == 0) {
+    element = document.createElement(tagName);
+  } else {
+    element = element[0];
+  }
+  return element;
 }
 
 // Delete an element from the DOM.
@@ -110,14 +151,14 @@ function killImage(self) {
 // Kill the image and draw a new one.
 function respawn(self) {
   killImage(self);
-  addImage();
+  addImage(self.id);
 }
 
 // Kill any image and draw a new one.
 function respawnRandom() {
-  let imgs = document.getElementsByTagName("img");
-  let img = arrayRand(imgs);
-  respawn(img);
+  let pins = document.getElementsByClassName("pin");
+  let pin = arrayRand(pins);
+  respawn(pin);
 }
 
 // Clear existing images and redraw.
@@ -125,19 +166,19 @@ function resetImages() {
   let count = 60;
   imagesDiv.innerHTML = "";
   for(let i = 0; i < count; i++) {
-    addImage();
+    let id = "pin" + i;
+    addImage(id);
   }
 }
 
 // Initialise the images.
 function initPage() {
   imagesDiv = document.getElementById("images");
-  setBackground();
-  resetImages();
-
   let query = "input[name='click'][value='random']";
   let radio = document.querySelector(query);
   radio.checked = true;
+  setBackground();
+  resetImages();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -171,10 +212,5 @@ function keydownEvents(e) {
 
 // Handle image onclick event.
 function pinOnclick(self) {
-  if (radioValue() == "link") {
-    let page = self.getAttribute("page");
-    window.open(page, "_blank");
-  } else {
-    respawn(self);
-  }
+  if (radioValue() == "random") respawn(self);
 }

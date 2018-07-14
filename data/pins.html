@@ -9,9 +9,6 @@
   <body>
     <div id="images"></div>
     <div id="popup">
-      <div id="nw">
-        <p></p>
-      </div>
       <div id="ne" onclick="detailToggle()">
         <p id="arrow">&#x25B2;</p>
       </div>
@@ -24,12 +21,14 @@
         <div id="se">
           <p>On clicking a pin:</p>
           <form>
-            <input type="radio" name="click" value="random" checked>
-              <label for="random" onclick="selectRadio(this)">Randomise pin</label>
-            <br>
-            <input type="radio" name="click" value="link">
-              <label for="link" onclick="selectRadio(this)">Link to webpage</label>
-            <br>
+            <p onclick="selectRadio('random')">
+              <input type="radio" name="click" value="random" checked>
+              <label for="random">Randomise pin</label>
+            </p>
+            <p onclick="selectRadio('link')">
+              <input type="radio" name="click" value="link">
+              <label for="link">Link to webpage</label>
+            </p>
           </form>
         </div>
       </div>

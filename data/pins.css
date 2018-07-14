@@ -1,8 +1,10 @@
-
 body {
   background-color: pink;
   background-size: 100% 100%;
   overflow: hidden;
+}
+input, label, #ne {
+  cursor: pointer;
 }
 a:link    { color: pink; }
 a:visited { color: pink; }
@@ -19,12 +21,11 @@ a:active  { color: pink; }
   padding: 0px ;
   font-size: 20px;
   color: pink;
+  pointer-events: none;
 }
 #ne, #s, #sw, #se {
   background-color: #111;
-}
-#nw {
-  float: left;
+  pointer-events: auto;
 }
 #ne {
   float: right;
