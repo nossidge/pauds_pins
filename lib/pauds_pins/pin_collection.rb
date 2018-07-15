@@ -20,13 +20,6 @@ module PaudsPins
 
     ############################################################################
 
-    # Scrape the wordpress site to get metadata for all the pins
-    # Don't scrape if the JSON file already exists
-    def scrape_if_necessary
-      return load if FILE_JSON.exist?
-      @pins = get_image_pins
-    end
-
     # Load pin collection data from JSON file
     def load
       from_file = JSON.parse(
@@ -77,38 +70,49 @@ module PaudsPins
 
     ############################################################################
 
-    def upload_till_error_png_x320
-      upload_till_error(:next_upload_png_x320)
-    end
-
     def upload_till_error_png_orig
       upload_till_error(:next_upload_png_orig)
+    end
+
+    def upload_till_error_png_x320
+      upload_till_error(:next_upload_png_x320)
     end
 
     ############################################################################
 
     private
 
+    # This will error, either if we are over the 50 image / hour Imgur limit,
+    # or if there are no more PNG files to upload
     def upload_till_error(method_name)
       loop do
-        pins.send(method_name)
-        pins.save
+        send(method_name)
+        save
         sleep(10)
       end
     end
 
-    # Find the first pin that does not have a url
-    # Upload it
-    def next_upload_png_x320
-      pin = pins.find { |i| i.png_x320.empty? }
-      pin.upload_png_x320
-    end
-
+    # Upload the first pin that does not have a url
     def next_upload_png_orig
       pin = pins.find { |i| i.png_orig.empty? }
       pin.upload_png_orig
     end
 
+    # Upload the first pin that does not have a url
+    def next_upload_png_x320
+      pin = pins.find { |i| i.png_x320.empty? }
+      pin.upload_png_x320
+    end
+
+    ############################################################################
+
+    # Don't scrape if the JSON file already exists
+    def scrape_if_necessary
+      return load if FILE_JSON.exist?
+      @pins = get_image_pins
+    end
+
+    # Scrape the wordpress site to get metadata for all the pins
     def get_image_pins
       [].tap do |output|
         get_catalogue_pages.map do |url|
@@ -119,6 +123,7 @@ module PaudsPins
       end.flatten.sort
     end
 
+    # Return the URL of each category
     def get_catalogue_pages
       url = 'https://paudspins.wordpress.com/the-badges/'
       page = Nokogiri::HTML open(url)

@@ -71,7 +71,7 @@ module PaudsPins
       return png_orig_filepath if png_orig_filepath.exist?
 
       command   = 'magick convert'
-      operation = '-fuzz 3% -transparent white'
+      operation = '-fuzz 3% -fill none -draw "color 0,0 floodfill"'
       input     = "\"#{jpg_filepath}\""
       output    = "\"#{png_orig_filepath}\""
       `#{command} #{operation} #{input} #{output}`
