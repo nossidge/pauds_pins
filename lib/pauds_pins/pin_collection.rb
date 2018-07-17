@@ -31,7 +31,7 @@ module PaudsPins
 
     # Save the contents of @pins as a json file
     def save(filepath = FILE_JSON)
-      hash_array = pins.map(&:to_h)
+      hash_array = pins.sort.reverse.map(&:to_h)
       json_string = JSON.pretty_generate(hash_array)
       File.open(filepath, 'w:UTF-8') do |f|
         f.puts json_string
@@ -135,6 +135,7 @@ module PaudsPins
     # This is the final of the scrape methods
     def scrape_from_category_page(url)
       page = Nokogiri::HTML open(url)
+      category = page.css('h1.entry-title').text
       elements = page.css('div.entry-content a')
       page_urls = elements.map { |i| i['href'] }
       elements = page.css('div.entry-content img')
@@ -149,6 +150,7 @@ module PaudsPins
       titles.count.times.map do |i|
         Pin.new(
           title: titles[i],
+          category: category,
           page: page_urls[i],
           jpg: jpg_urls[i]
         )

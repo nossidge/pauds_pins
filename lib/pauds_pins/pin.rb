@@ -3,10 +3,11 @@
 
 module PaudsPins
   class Pin
-    attr_accessor :title, :page, :jpg, :png_orig, :png_x320
+    attr_accessor :title, :category, :page, :jpg, :png_orig, :png_x320
 
     def initialize(args = {})
       @title     = args[:title]
+      @category  = args[:category]
       @page      = args[:page]
       @jpg       = args[:jpg]
       @png_orig  = args[:png_orig]
@@ -35,6 +36,7 @@ module PaudsPins
     def to_h
       {
         title:     title.to_s,
+        category:  category.to_s,
         filename:  filename.to_s,
         page:      page.to_s,
         jpg:       jpg.to_s,
@@ -49,7 +51,7 @@ module PaudsPins
 
     # Using 'page' will sort by category, then filename
     def <=>(other)
-      other.page <=> page
+      "#{other.category} #{other.filename}" <=> "#{category} #{filename}"
     end
 
     ############################################################################
