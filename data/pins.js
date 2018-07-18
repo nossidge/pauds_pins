@@ -15,8 +15,6 @@ function arrayRand(array) {
 
 // Stuff for showing and hiding the bottom div.
 let detailHidden = true;
-let iconUp   = "&#x25B2;";
-let iconDown = "&#x25BC;";
 
 // Show/hide the detail popup.
 function detailToggle() {
@@ -34,14 +32,14 @@ function detailToggle() {
 function detailShow(popup, arrow) {
   popup.className = "visible";
   popup.style.bottom = "0px";
-  arrow.innerHTML = iconDown;
+  arrow.setAttribute("class", "spin");
 }
 
 // When it is visible and we want to hide it.
 function detailHide(popup, arrow) {
   popup.className = "hidden";
   popup.style.bottom = "-110px";
-  arrow.innerHTML = iconUp;
+  arrow.setAttribute("class", "spun");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

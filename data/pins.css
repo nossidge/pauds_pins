@@ -80,3 +80,33 @@ a:active  { color: pink; }
   from { bottom: 0px; }
   to   { bottom: -110px; }
 }
+
+/******************************************************************************/
+
+svg {
+  margin: 30px;
+}
+.spin {
+  -webkit-animation: svg_spin 0.5s forwards;
+  animation: svg_spin 0.5s forwards;
+}
+.spun {
+  -webkit-animation: svg_spun 0.5s forwards;
+  animation: svg_spun 0.5s forwards;
+}
+@keyframes svg_spin {
+  from { transform: scale( 1, 1); }
+  to   { transform: scale(-1,-1); }
+}
+@-webkit-keyframes svg_spin {
+  from { transform: scale( 1, 1); }
+  to   { transform: scale(-1,-1); }
+}
+@keyframes svg_spun {
+  from { transform: scale(-1,-1); }
+  to   { transform: scale( 1, 1); }
+}
+@-webkit-keyframes svg_spun {
+  from { transform: scale( 1, 1); }
+  to   { transform: scale(-1,-1); }
+}
