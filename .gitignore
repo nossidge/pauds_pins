@@ -67,8 +67,8 @@ desktop.ini
 work*.rb
 /~/
 
-# Output files
-/output/
-
-# Config files
-/config/
+# Output images
+/data/background
+/data/jpg
+/data/png_orig
+/data/png_x320

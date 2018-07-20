@@ -50,11 +50,12 @@ listing the image URLs.
     [
       {
         "title": "‘Gay’ – silver",
+        "category": "Just Gay",
         "filename": "gay-1-ws",
         "page": "https://paudspins.wordpress.com/portfolio/just-gay/gay-1-ws/",
         "jpg": "https://paudspins.files.wordpress.com/2018/05/gay-1-ws.jpg",
-        "png_orig": "https://i.imgur.com/HX2rm60.png",
-        "png_x320": "https://i.imgur.com/ArS7Qsj.png"
+        "png_orig": "https://i.imgur.com/xDngt5R.png",
+        "png_x320": "https://i.imgur.com/rSDaEYu.png"
       }
     ]
 
